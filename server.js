@@ -11,22 +11,16 @@ const PORT = process.env.PORT || 3000;
 app.use(bodyParser.json());
 app.use(cors());
 
-// Servir archivos estáticos con cache adecuado
+// Servir archivos estáticos
 app.use(express.static(path.join(__dirname), {
-    maxAge: '1d',
-    etag: false
+    setHeaders: (res, path) => {
+        if (path.endsWith('.js')) {
+            res.setHeader('Content-Type', 'application/javascript');
+        } else if (path.endsWith('.css')) {
+            res.setHeader('Content-Type', 'text/css');
+        }
+    }
 }));
-
-// Middleware para servir archivos específicos
-app.get('*.js', (req, res, next) => {
-    res.set('Content-Type', 'application/javascript');
-    next();
-});
-
-app.get('*.css', (req, res, next) => {
-    res.set('Content-Type', 'text/css');
-    next();
-});
 
 // Variables
 const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || 'rHqfuam06C##@V';
@@ -209,6 +203,10 @@ app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, 'index.html'));
 });
 
+app.get('/index.html', (req, res) => {
+    res.sendFile(path.join(__dirname, 'index.html'));
+});
+
 app.get('/admin.html', (req, res) => {
     res.sendFile(path.join(__dirname, 'admin.html'));
 });
@@ -230,7 +228,7 @@ app.get('/api/questions', (req, res) => {
 });
 
 // Iniciar servidor (solo en desarrollo local)
-if (process.env.NODE_ENV !== 'production') {
+if (require.main === module) {
     app.listen(PORT, () => {
         console.log(`🎮 Servidor The Hangover ejecutándose en http://localhost:${PORT}`);
         console.log(`📊 Panel admin disponible en http://localhost:${PORT}/admin.html`);
