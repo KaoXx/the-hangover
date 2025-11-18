@@ -199,7 +199,7 @@ function showScreen(screenId) {
 // Cargar preguntas desde el archivo JSON
 async function loadQuestions() {
     try {
-        const response = await fetch('questions.json');
+        const response = await fetch(`${API_BASE_URL}/questions`);
         questionsData = await response.json();
         console.log('Preguntas cargadas correctamente:', questionsData);
     } catch (error) {
