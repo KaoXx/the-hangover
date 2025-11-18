@@ -1,127 +1,68 @@
-# 🎉 THE HANGOVER - Party Game Ruleta
+# 🎉 The Hangover - Party Game
 
-Sistema de juego de ruleta para fiestas con preguntas, retos, prendas, tragos y contenido hot.
+Un juego de fiesta para adultos con preguntas de verdad, retos, monedas, prendas, tragos y más.
 
-## 🚀 Instalación y Ejecución
+## 🚀 Tecnología
 
-### Requisitos
-- Node.js instalado en tu sistema
+- **Frontend**: HTML5, CSS3, JavaScript
+- **Backend**: Node.js + Express.js
+- **Base de Datos**: Supabase (PostgreSQL)
+- **Hosting**: Vercel
 
-### Pasos
+## 🌐 URLs en Vivo
 
-1. **Abre una terminal en la carpeta del proyecto**
+- **Juego**: https://the-hangover.vercel.app
+- **Admin Panel**: https://the-hangover.vercel.app/admin.html
+- **Contraseña Admin**: `rHqfuam06C##@V`
 
-2. **Instala las dependencias:**
+## 📋 Características
+
+✅ 390+ preguntas en 6 categorías
+✅ Sistema de sugerencia de preguntas
+✅ Panel de moderación (aprobar/rechazar)
+✅ Persistencia en Supabase
+✅ Interfaz responsiva
+✅ Efectos visuales (confeti, sonidos)
+
+## 🎮 Cómo jugar
+
+1. Ve a https://the-hangover.vercel.app
+2. Haz clic en la ruleta para girar
+3. Sigue la pregunta o reto que salga
+4. ¡A divertirse!
+
+## 💡 Sugerir preguntas
+
+1. En el juego, haz clic en "+ Pregunta"
+2. Escribe tu pregunta
+3. El admin la aprobará o rechazará
+
+## 🔧 Desarrollo Local
+
 ```bash
 npm install
-```
-
-3. **Inicia el servidor:**
-```bash
 npm start
+# Abre http://localhost:3000
 ```
 
-El servidor se ejecutará en `http://localhost:3000`
+## 📊 Categorías
 
-4. **Abre el juego en tu navegador:**
-- Juego: `http://localhost:3000/index.html`
-- Panel Admin: `http://localhost:3000/admin.html`
+- **Verdad**: Preguntas personales (76)
+- **Reto**: Desafíos físicos/sociales (55)
+- **Moneda**: Acciones entre dos personas (72)
+- **Prenda**: Progresión de quitarse ropa (57)
+- **Tragos**: Desafíos con bebidas (58)
+- **Hot**: Contenido explícito (73)
 
----
-
-## 🎮 Cómo Jugar
-
-1. Haz clic en "COMENZAR JUEGO"
-2. Selecciona las categorías que quieras usar
-3. Pulsa "Iniciar Ruleta" para comenzar
-4. Haz clic en SPIN para girar la ruleta
-5. Responde/realiza lo que salga
-
-## ➕ Añadir Preguntas Personalizadas
-
-1. Durante el juego, haz clic en el botón "+ Pregunta"
-2. Selecciona la categoría
-3. Escribe tu pregunta o reto
-4. Envía para moderación
-
-La pregunta será revisada por un administrador antes de aparecer en el juego.
-
----
-
-## 🔐 Panel de Administrador
-
-**URL:** `http://localhost:3000/admin.html`
-
-**Contraseña:** `rHqfuam06C##@V`
-
-### Funciones:
-- Ver todas las preguntas pendientes de revisión
-- Aprobar preguntas para que aparezcan en el juego
-- Rechazar preguntas inapropiadas
-
----
-
-## 📁 Estructura de Archivos
+## 🛠️ Variables de Entorno (Vercel)
 
 ```
-TheHangover/
-├── index.html              # Página principal del juego
-├── admin.html              # Panel de administrador
-├── styles.css              # Estilos CSS
-├── script.js               # Lógica del juego
-├── server.js               # Backend Node.js
-├── questions.json          # Preguntas aprobadas
-├── pending_questions.json  # Preguntas en espera
-├── package.json            # Dependencias
-└── README.md               # Este archivo
+ADMIN_PASSWORD=rHqfuam06C##@V
+SUPABASE_URL=https://virmicqlkvygmqkjoekf.supabase.co
+SUPABASE_ANON_KEY=<tu_anon_key>
+SUPABASE_SERVICE_KEY=<tu_service_key>
 ```
 
 ---
 
-## 🎯 Categorías Disponibles
-
-- **❓ Verdad** - Preguntas comprometedoras
-- **⚡ Reto** - Retos físicos/sensuales
-- **💰 Moneda** - Acciones entre dos personas
-- **👔 Prenda** - Quitarse prendas progresivamente
-- **🍺 Tragos** - Desafíos con bebidas
-- **🔥 Hot** - Preguntas explícitas
-
----
-
-## 🔊 Características
-
-✅ Ruleta interactiva con 6 categorías
-✅ Efectos de sonido y animaciones
-✅ Confeti y efectos visuales
-✅ Sistema de moderación de preguntas
-✅ Panel de administración
-✅ Más de 300 preguntas incluidas
-✅ Diseño responsivo (móvil, tablet, desktop)
-✅ Interfaz en español
-
----
-
-## ⚙️ Solución de Problemas
-
-**"Error de conexión"**
-- Asegúrate de que el servidor está ejecutándose (`npm start`)
-- El puerto 3000 debe estar disponible
-
-**"CORS error"**
-- El servidor está configurado para permitir CORS
-- Si persiste, reinicia el servidor
-
-**Preguntas no se guardan**
-- El servidor debe estar ejecutándose
-- Revisa la consola del navegador (F12) para errores
-
----
-
-## 📝 Licencia
-
-MIT - Libre para usar y modificar
-
----
-
-¡Que te diviertas en la fiesta! 🎉🍺
+**Hecho con ❤️ para divertirse responsablemente**

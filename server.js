@@ -9,7 +9,7 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 
 // ============= CONFIGURACIÓN SUPABASE =============
-const SUPABASE_URL = process.env.SUPABASE_URL || 'https://virmicqlkvygmqkjoekf.supabase.co';
+const SUPABASE_URL = process.env.SUPABASE_URL || 'https://virmicqlkvygmqkjoekf.supabase.com';
 const SUPABASE_ANON_KEY = process.env.SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZpcm1pY3Fsa3Z5Z21xa2pvZWtmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjM0MzQzMzcsImV4cCI6MjA3OTAxMDMzN30.LabkJdHzLk-cZcLLdA--yCwFMeXfq6faRnfrWVublvQ';
 const SUPABASE_SERVICE_KEY = process.env.SUPABASE_SERVICE_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZpcm1pY3Fsa3Z5Z21xa2pvZWtmIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc2MzQzNDMzNywiZXhwIjoyMDc5MDEwMzM3fQ.PkHil53rcQ_1NjL8yBufF3BU2tPBqRDAh3nPYFKqr5o';
 
