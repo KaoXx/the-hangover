@@ -10,7 +10,7 @@ const PORT = process.env.PORT || 3000;
 // Middleware
 app.use(bodyParser.json());
 app.use(cors());
-app.use(express.static('.')); // Servir archivos estáticos desde el directorio raíz
+app.use(express.static(path.join(__dirname))); // Servir archivos estáticos
 
 // Variables
 const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || 'rHqfuam06C##@V';
@@ -188,7 +188,16 @@ app.post('/api/admin/reject-question', (req, res) => {
     }
 });
 
-// Servir archivos estáticos
+// Ruta raíz - servir index.html
+app.get('/', (req, res) => {
+    res.sendFile(path.join(__dirname, 'index.html'));
+});
+
+app.get('/admin.html', (req, res) => {
+    res.sendFile(path.join(__dirname, 'admin.html'));
+});
+
+// API para obtener preguntas
 app.get('/api/questions', (req, res) => {
     const questions = readFile(QUESTIONS_FILE);
     res.json(questions);
