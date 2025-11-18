@@ -27,6 +27,12 @@ const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || 'rHqfuam06C##@V';
 const QUESTIONS_FILE = path.join(__dirname, 'questions.json');
 const PENDING_FILE = path.join(__dirname, 'pending_questions.json');
 
+// Inicializar archivos al arrancar
+if (!fs.existsSync(PENDING_FILE)) {
+    fs.writeFileSync(PENDING_FILE, JSON.stringify({ "pending": [] }, null, 2), 'utf8');
+    console.log('Archivo pending_questions.json creado');
+}
+
 // Helpers para leer/escribir archivos
 function readFile(filename) {
     try {
@@ -53,6 +59,16 @@ function writeFile(filename, data) {
     }
 }
 
+// Inicializar archivos si no existen
+function initializeFiles() {
+    if (!fs.existsSync(QUESTIONS_FILE)) {
+        writeFile(QUESTIONS_FILE, { "Verdad": [], "Reto": [], "Moneda": [], "Prenda": [], "Tragos": [], "Hot": [] });
+    }
+    if (!fs.existsSync(PENDING_FILE)) {
+        writeFile(PENDING_FILE, { "pending": [] });
+    }
+}
+
 // Endpoint para enviar pregunta (usuario normal)
 app.post('/api/suggest-question', (req, res) => {
     try {
@@ -60,6 +76,11 @@ app.post('/api/suggest-question', (req, res) => {
 
         if (!category || !text) {
             return res.status(400).json({ error: 'Categoría y texto requeridos' });
+        }
+
+        // Asegurar que el archivo existe
+        if (!fs.existsSync(PENDING_FILE)) {
+            fs.writeFileSync(PENDING_FILE, JSON.stringify({ "pending": [] }, null, 2), 'utf8');
         }
 
         let pending = readFile(PENDING_FILE);
@@ -80,6 +101,8 @@ app.post('/api/suggest-question', (req, res) => {
         pending.pending.push(newQuestion);
         writeFile(PENDING_FILE, pending);
 
+        console.log('Pregunta sugerida:', newQuestion);
+
         res.json({ 
             success: true, 
             message: 'Pregunta enviada para moderación',
@@ -87,7 +110,7 @@ app.post('/api/suggest-question', (req, res) => {
         });
     } catch (error) {
         console.error('Error:', error);
-        res.status(500).json({ error: 'Error al guardar la pregunta' });
+        res.status(500).json({ error: 'Error al guardar la pregunta: ' + error.message });
     }
 });
 
@@ -116,9 +139,16 @@ app.post('/api/admin/pending-questions', (req, res) => {
             return res.status(401).json({ error: 'No autorizado' });
         }
 
+        // Asegurar que el archivo existe
+        if (!fs.existsSync(PENDING_FILE)) {
+            fs.writeFileSync(PENDING_FILE, JSON.stringify({ "pending": [] }, null, 2), 'utf8');
+        }
+
         const pending = readFile(PENDING_FILE);
+        console.log('Preguntas pendientes:', pending.pending);
         res.json(pending.pending || []);
     } catch (error) {
+        console.error('Error al obtener preguntas:', error);
         res.status(500).json({ error: 'Error al obtener preguntas' });
     }
 });
