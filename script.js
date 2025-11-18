@@ -410,40 +410,107 @@ function drawClassicWheel(ctx, centerX, centerY, radius) {
 }
 
 function drawPartyWheel(ctx, centerX, centerY, radius) {
-    // MITAD IZQUIERDA: Jugadores
-    // MITAD DERECHA: Categorías
-    const sliceAngle = (2 * Math.PI) / (players.length + categories.length);
+    // RULETA DOBLE CONCÉNTRICA
+    // INTERIOR: Nombres de jugadores
+    // EXTERIOR: Categorías
+    
+    const numPlayers = players.length;
+    const numCategories = categories.length;
+    
+    const playerSliceAngle = (2 * Math.PI) / numPlayers;
+    const categorySliceAngle = (2 * Math.PI) / numCategories;
     const startAngleOffset = -Math.PI / 2;
+    
+    // Radio interior y exterior
+    const innerRadius = radius * 0.4;
+    const outerRadius = radius;
+    const middleRadius = (innerRadius + outerRadius) / 2;
 
-    // Dibujar secciones de jugadores (mitad izquierda)
-    players.forEach((player, index) => {
-        const startAngle = startAngleOffset + index * sliceAngle;
-        const endAngle = startAngle + sliceAngle;
+    // ===== RULETA EXTERIOR: CATEGORÍAS =====
+    categories.forEach((category, index) => {
+        const startAngle = startAngleOffset + index * categorySliceAngle;
+        const endAngle = startAngle + categorySliceAngle;
 
+        // Degradado para la sección
         const gradient = ctx.createLinearGradient(
-            centerX + radius * Math.cos(startAngle),
-            centerY + radius * Math.sin(startAngle),
-            centerX + radius * Math.cos(endAngle),
-            centerY + radius * Math.sin(endAngle)
+            centerX + outerRadius * Math.cos(startAngle),
+            centerY + outerRadius * Math.sin(startAngle),
+            centerX + outerRadius * Math.cos(endAngle),
+            centerY + outerRadius * Math.sin(endAngle)
         );
         
-        gradient.addColorStop(0, '#4287f5');
-        gradient.addColorStop(1, '#1e40af');
+        const baseColor = colors[index % colors.length];
+        gradient.addColorStop(0, baseColor);
+        gradient.addColorStop(1, adjustColor(baseColor, -20));
 
+        // Dibujar anillo de categoría
         ctx.beginPath();
-        ctx.moveTo(centerX, centerY);
-        ctx.arc(centerX, centerY, radius, startAngle, endAngle);
+        ctx.arc(centerX, centerY, outerRadius, startAngle, endAngle);
+        ctx.lineTo(centerX + middleRadius * Math.cos(endAngle), centerY + middleRadius * Math.sin(endAngle));
+        ctx.arc(centerX, centerY, middleRadius, endAngle, startAngle, true);
+        ctx.lineTo(centerX + outerRadius * Math.cos(startAngle), centerY + outerRadius * Math.sin(startAngle));
+        ctx.fillStyle = gradient;
+        ctx.fill();
+
+        // Borde
+        ctx.strokeStyle = 'rgba(255, 255, 255, 0.6)';
+        ctx.lineWidth = 2;
+        ctx.stroke();
+
+        // Icono de categoría
+        const angle = startAngle + categorySliceAngle / 2;
+        const iconRadius = (middleRadius + outerRadius) / 2;
+        const iconX = centerX + iconRadius * Math.cos(angle);
+        const iconY = centerY + iconRadius * Math.sin(angle);
+
+        ctx.save();
+        ctx.translate(iconX, iconY);
+
+        ctx.fillStyle = '#fff';
+        ctx.font = 'bold 32px Arial';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+
+        ctx.fillStyle = 'rgba(0, 0, 0, 0.3)';
+        ctx.fillText(categoryIcons[category] || '❓', 1, 1);
+
+        ctx.fillStyle = '#fff';
+        ctx.fillText(categoryIcons[category] || '❓', 0, 0);
+
+        ctx.restore();
+    });
+
+    // ===== RULETA INTERIOR: JUGADORES =====
+    players.forEach((player, index) => {
+        const startAngle = startAngleOffset + index * playerSliceAngle;
+        const endAngle = startAngle + playerSliceAngle;
+
+        // Degradado azul para jugadores
+        const gradient = ctx.createLinearGradient(
+            centerX + innerRadius * Math.cos(startAngle),
+            centerY + innerRadius * Math.sin(startAngle),
+            centerX + innerRadius * Math.cos(endAngle),
+            centerY + innerRadius * Math.sin(endAngle)
+        );
+        
+        gradient.addColorStop(0, '#5B9FFF');
+        gradient.addColorStop(1, '#1E40AF');
+
+        // Dibujar sección de jugador
+        ctx.beginPath();
+        ctx.arc(centerX, centerY, innerRadius, startAngle, endAngle);
         ctx.lineTo(centerX, centerY);
         ctx.fillStyle = gradient;
         ctx.fill();
 
-        ctx.strokeStyle = 'rgba(255, 255, 255, 0.5)';
-        ctx.lineWidth = 3;
+        // Borde
+        ctx.strokeStyle = 'rgba(255, 255, 255, 0.7)';
+        ctx.lineWidth = 2.5;
         ctx.stroke();
 
         // Nombre del jugador
-        const angle = startAngle + sliceAngle / 2;
-        const textRadius = radius * 0.6;
+        const angle = startAngle + playerSliceAngle / 2;
+        const textRadius = innerRadius * 0.65;
         const textX = centerX + textRadius * Math.cos(angle);
         const textY = centerY + textRadius * Math.sin(angle);
 
@@ -452,65 +519,36 @@ function drawPartyWheel(ctx, centerX, centerY, radius) {
         ctx.rotate(angle + Math.PI / 2);
 
         ctx.fillStyle = '#fff';
-        ctx.font = 'bold 16px Arial';
+        ctx.font = 'bold 13px Arial';
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
-        ctx.fillText(player.substring(0, 10), 0, 0);
-
-        ctx.restore();
-    });
-
-    // Dibujar secciones de categorías (mitad derecha)
-    categories.forEach((category, index) => {
-        const startAngle = startAngleOffset + (players.length + index) * sliceAngle;
-        const endAngle = startAngle + sliceAngle;
-
-        const gradient = ctx.createLinearGradient(
-            centerX + radius * Math.cos(startAngle),
-            centerY + radius * Math.sin(startAngle),
-            centerX + radius * Math.cos(endAngle),
-            centerY + radius * Math.sin(endAngle)
-        );
         
-        const baseColor = colors[index % colors.length];
-        gradient.addColorStop(0, baseColor);
-        gradient.addColorStop(1, adjustColor(baseColor, -20));
-
-        ctx.beginPath();
-        ctx.moveTo(centerX, centerY);
-        ctx.arc(centerX, centerY, radius, startAngle, endAngle);
-        ctx.lineTo(centerX, centerY);
-        ctx.fillStyle = gradient;
-        ctx.fill();
-
-        ctx.strokeStyle = 'rgba(255, 255, 255, 0.5)';
-        ctx.lineWidth = 3;
-        ctx.stroke();
-
-        // Icono de categoría
-        const angle = startAngle + sliceAngle / 2;
-        const iconRadius = radius * 0.68;
-        const iconX = centerX + iconRadius * Math.cos(angle);
-        const iconY = centerY + iconRadius * Math.sin(angle);
-
-        ctx.save();
-        ctx.translate(iconX, iconY);
-
-        ctx.fillStyle = '#fff';
-        ctx.font = 'bold 40px Arial';
-        ctx.textAlign = 'center';
-        ctx.textBaseline = 'middle';
-
-        ctx.fillStyle = 'rgba(0, 0, 0, 0.2)';
-        ctx.fillText(categoryIcons[category] || '❓', 2, 2);
-
-        ctx.fillStyle = '#fff';
-        ctx.fillText(categoryIcons[category] || '❓', 0, 0);
+        // Truncar nombre si es muy largo
+        const displayName = player.length > 12 ? player.substring(0, 11) + '.' : player;
+        ctx.fillText(displayName, 0, 0);
 
         ctx.restore();
     });
 
-    drawWheelCenter(ctx, centerX, centerY);
+    // ===== CÍRCULO CENTRAL =====
+    const centralGradient = ctx.createRadialGradient(centerX - 10, centerY - 10, 0, centerX, centerY, innerRadius * 0.3);
+    centralGradient.addColorStop(0, '#FFE5B4');
+    centralGradient.addColorStop(1, '#FF6B35');
+
+    ctx.beginPath();
+    ctx.arc(centerX, centerY, innerRadius * 0.3, 0, 2 * Math.PI);
+    ctx.fillStyle = centralGradient;
+    ctx.fill();
+
+    ctx.strokeStyle = 'rgba(255, 255, 255, 0.8)';
+    ctx.lineWidth = 3;
+    ctx.stroke();
+
+    // Efecto 3D en el círculo central
+    ctx.beginPath();
+    ctx.arc(centerX, centerY, innerRadius * 0.2, 0, 2 * Math.PI);
+    ctx.fillStyle = '#FFD60A';
+    ctx.fill();
 }
 
 function drawWheelCenter(ctx, centerX, centerY) {
@@ -660,32 +698,31 @@ function showPartyResult() {
     let normalizedRotation = currentRotation % 360;
     if (normalizedRotation < 0) normalizedRotation += 360;
     
-    const totalSlices = players.length + categories.length;
-    const sliceAngle = 360 / totalSlices;
+    // RULETA CONCÉNTRICA:
+    // Interior: Nombres (numPlayers secciones)
+    // Exterior: Categorías (numCategories secciones)
     
-    const selectedIndex = Math.floor((360 - normalizedRotation) / sliceAngle) % totalSlices;
+    const numPlayers = players.length;
+    const numCategories = categories.length;
     
-    let selectedPlayer, selectedCategory, selectedIcon, question;
+    const playerSliceAngle = 360 / numPlayers;
+    const categorySliceAngle = 360 / numCategories;
     
-    if (selectedIndex < players.length) {
-        // Seleccionó jugador (error - necesita categoría también)
-        // Esto no debería pasar, ajustamos
-        selectedPlayer = players[selectedIndex];
-        selectedCategory = categories[0];
-    } else {
-        // Seleccionó categoría
-        const categoryIndex = selectedIndex - players.length;
-        selectedCategory = categories[categoryIndex % categories.length];
-        
-        // Tomar el jugador actual (rotativo)
-        const currentPlayerIndex = Math.floor(Math.random() * players.length);
-        selectedPlayer = players[currentPlayerIndex];
-    }
+    // Calcular qué jugador y qué categoría están en el puntero
+    // El puntero apunta arriba (0°)
     
-    selectedIcon = categoryIcons[selectedCategory] || '❓';
+    // Índice del jugador (ruleta interior)
+    const playerIndex = Math.floor((360 - normalizedRotation) / playerSliceAngle) % numPlayers;
+    const selectedPlayer = players[playerIndex];
+    
+    // Índice de la categoría (ruleta exterior)
+    const categoryIndex = Math.floor((360 - normalizedRotation) / categorySliceAngle) % numCategories;
+    const selectedCategory = categories[categoryIndex];
+    
+    const selectedIcon = categoryIcons[selectedCategory] || '❓';
     
     // Obtener una pregunta aleatoria de la categoría
-    question = '¡Momento increíble!';
+    let question = '¡Momento increíble!';
     if (questionsData[selectedCategory] && questionsData[selectedCategory].length > 0) {
         const questions = questionsData[selectedCategory];
         question = questions[Math.floor(Math.random() * questions.length)];
