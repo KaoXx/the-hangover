@@ -43,40 +43,72 @@ function loadPendingQuestions() {
 function savePendingQuestions() {
     try {
         fs.writeFileSync(PENDING_FILE, JSON.stringify({ pending: pendingQuestionsMemory }, null, 2), 'utf8');
-        // En producción, hacer commit automático
-        if (process.env.NODE_ENV === 'production') {
-            commitChanges('Auto-save pending questions');
-        }
     } catch (error) {
         console.error('Error guardando preguntas pendientes:', error);
     }
 }
 
 // Guardar preguntas aprobadas
-function saveApprovedQuestions(data) {
+async function saveApprovedQuestions(data) {
     try {
         fs.writeFileSync(QUESTIONS_FILE, JSON.stringify(data, null, 2), 'utf8');
-        // En producción, hacer commit automático
-        if (process.env.NODE_ENV === 'production') {
-            commitChanges('Auto-save approved questions');
-        }
+        // Guardar en GitHub
+        await commitChanges('Auto-update: Pregunta aprobada');
     } catch (error) {
         console.error('Error guardando preguntas aprobadas:', error);
     }
 }
 
-// Hacer commit y push automático (solo en Vercel)
-function commitChanges(message) {
+// Hacer commit y push automático via GitHub API
+async function commitChanges(message) {
     try {
-        if (process.env.VERCEL === '1') {
-            const { execSync } = require('child_process');
-            execSync('git add questions.json pending_questions.json', { cwd: __dirname });
-            execSync(`git commit -m "${message}" || true`, { cwd: __dirname });
-            execSync('git push origin main || true', { cwd: __dirname });
-            console.log(`✅ Git commit realizado: ${message}`);
+        const GITHUB_TOKEN = process.env.GITHUB_TOKEN;
+        const REPO = 'KaoXx/the-hangover';
+        
+        if (!GITHUB_TOKEN) {
+            console.log('⚠️ GITHUB_TOKEN no configurado, cambios no se guardarán en GitHub');
+            return;
+        }
+
+        // Leer el archivo actual
+        const filePath = 'questions.json';
+        const fileContent = fs.readFileSync(QUESTIONS_FILE, 'utf8');
+        const encodedContent = Buffer.from(fileContent).toString('base64');
+
+        // Obtener SHA del archivo actual
+        const getShaResponse = await fetch(`https://api.github.com/repos/${REPO}/contents/${filePath}`, {
+            headers: { 'Authorization': `token ${GITHUB_TOKEN}` }
+        });
+        
+        if (!getShaResponse.ok) {
+            console.error('Error obteniendo SHA:', await getShaResponse.text());
+            return;
+        }
+
+        const { sha } = await getShaResponse.json();
+
+        // Hacer el commit via API
+        const commitResponse = await fetch(`https://api.github.com/repos/${REPO}/contents/${filePath}`, {
+            method: 'PUT',
+            headers: {
+                'Authorization': `token ${GITHUB_TOKEN}`,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                message: message,
+                content: encodedContent,
+                sha: sha,
+                branch: 'main'
+            })
+        });
+
+        if (commitResponse.ok) {
+            console.log(`✅ Pregunta guardada en GitHub: ${message}`);
+        } else {
+            console.error('Error en commit:', await commitResponse.text());
         }
     } catch (error) {
-        console.error('Error en git commit:', error.message);
+        console.error('Error en commitChanges:', error.message);
     }
 }
 
@@ -150,7 +182,7 @@ app.post('/api/admin/pending-questions', (req, res) => {
 });
 
 // ============= API: APROBAR PREGUNTA =============
-app.post('/api/admin/approve-question', (req, res) => {
+app.post('/api/admin/approve-question', async (req, res) => {
     try {
         const { token, questionId } = req.body;
         if (token !== Buffer.from(ADMIN_PASSWORD).toString('base64')) {
@@ -170,7 +202,7 @@ app.post('/api/admin/approve-question', (req, res) => {
         }
 
         approvedQuestions[question.category].push(question.text);
-        saveApprovedQuestions(approvedQuestions);
+        await saveApprovedQuestions(approvedQuestions);
 
         pendingQuestionsMemory.splice(index, 1);
         savePendingQuestions();
