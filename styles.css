@@ -81,6 +81,97 @@ body {
     color: #aaa;
 }
 
+.start-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    width: 100%;
+}
+
+.start-buttons .btn {
+    width: 100%;
+}
+
+/* ===== PLAYERS SETUP ===== */
+.players-setup {
+    width: 100%;
+}
+
+.players-setup h3 {
+    color: var(--accent-color);
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+.player-count-selector {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(60px, 1fr));
+    gap: 10px;
+    margin-bottom: 30px;
+}
+
+.count-btn {
+    padding: 12px;
+    background: rgba(255, 107, 53, 0.1);
+    border: 2px solid var(--primary-color);
+    color: var(--text-light);
+    border-radius: 8px;
+    font-size: 1.1em;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.count-btn:hover {
+    background: var(--primary-color);
+    color: white;
+    transform: scale(1.05);
+}
+
+.count-btn.active {
+    background: var(--primary-color);
+    color: white;
+    transform: scale(1.1);
+}
+
+.player-inputs {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-bottom: 25px;
+}
+
+.player-input-group {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+}
+
+.player-input-group label {
+    color: var(--accent-color);
+    font-weight: 600;
+    min-width: 70px;
+}
+
+.player-input-group input {
+    flex: 1;
+    padding: 10px;
+    background: rgba(255, 255, 255, 0.1);
+    border: 2px solid var(--primary-color);
+    border-radius: 8px;
+    color: var(--text-light);
+    font-size: 0.95em;
+}
+
+.player-input-group input::placeholder {
+    color: #888;
+}
+
+.player-input-group input:focus {
+    outline: none;
+    background: rgba(255, 107, 53, 0.2);
+}
+
 /* ===== SETUP SCREEN ===== */
 .setup-content {
     background: var(--card-bg);
@@ -473,6 +564,20 @@ body {
     .btn-large {
         padding: 14px 30px;
         font-size: 1em;
+    }
+
+    .start-buttons {
+        gap: 15px;
+    }
+
+    .player-count-selector {
+        grid-template-columns: repeat(auto-fit, minmax(50px, 1fr));
+        gap: 8px;
+    }
+
+    .count-btn {
+        padding: 10px;
+        font-size: 0.95em;
     }
 
     .setup-content {

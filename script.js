@@ -5,6 +5,11 @@ let isSpinning = false;
 let currentRotation = 0;
 let questionsData = {}; // Almacenará las preguntas cargadas
 
+// Variables para Modo Fiesta
+let partyMode = false;
+let players = [];
+let sessionHistory = [];
+
 // Detectar URL base
 const API_BASE = window.location.hostname === 'localhost' 
     ? 'http://localhost:3000' 
@@ -621,3 +626,78 @@ window.onclick = function(event) {
         closeAddQuestionModal();
     }
 }
+
+// ===== MODO FIESTA =====
+function goToPlayersSetup() {
+    showScreen('playersScreen');
+}
+
+function setPlayerCount(count) {
+    // Remover clase activa de todos
+    document.querySelectorAll('.count-btn').forEach(btn => btn.classList.remove('active'));
+    
+    // Agregar clase activa al botón clickeado
+    event.target.classList.add('active');
+    
+    players = [];
+    const inputsDiv = document.getElementById('playerInputs');
+    inputsDiv.innerHTML = '';
+    
+    for (let i = 1; i <= count; i++) {
+        const div = document.createElement('div');
+        div.className = 'player-input-group';
+        div.innerHTML = `
+            <label>Jugador ${i}:</label>
+            <input type="text" placeholder="Nombre" maxlength="15" 
+                   onchange="updatePlayer(${i-1}, this.value)">
+        `;
+        inputsDiv.appendChild(div);
+    }
+    
+    // Inicializar array de jugadores
+    players = Array(count).fill('').map((_, i) => `Jugador ${i+1}`);
+    
+    // Mostrar botón de inicio
+    document.getElementById('startPartyBtn').style.display = 'block';
+}
+
+function updatePlayer(index, name) {
+    players[index] = name || `Jugador ${index + 1}`;
+}
+
+function startPartyGame() {
+    // Filtrar nombres vacíos
+    players = players.filter(p => p.trim() !== '');
+    
+    if (players.length < 2) {
+        alert('Necesitas al menos 2 jugadores');
+        return;
+    }
+    
+    partyMode = true;
+    sessionHistory = [];
+    
+    // Aquí se carga el juego en modo fiesta
+    showScreen('gameScreen');
+    setupPartyWheel();
+}
+
+function setupPartyWheel() {
+    // Limpiar configuración anterior
+    categories = ['Verdad', 'Reto', 'Moneda', 'Prenda', 'Tragos', 'Hot'];
+    customOptions = [];
+    
+    // Dibujar la nueva ruleta
+    const canvas = document.getElementById('wheelCanvas');
+    if (canvas) {
+        drawWheel();
+    }
+}
+
+function goToStart() {
+    partyMode = false;
+    players = [];
+    sessionHistory = [];
+    showScreen('startScreen');
+}
+

@@ -19,7 +19,37 @@
             <div class="welcome-content">
                 <h1>🎉 THE HANGOVER 🎉</h1>
                 <p>Juego de Ruleta para Fiestas</p>
-                <button onclick="goToSetup()" class="btn btn-primary btn-large">COMENZAR JUEGO</button>
+                <div class="start-buttons">
+                    <button onclick="goToSetup()" class="btn btn-primary btn-large">🎮 JUEGO CLÁSICO</button>
+                    <button onclick="goToPlayersSetup()" class="btn btn-primary btn-large">👥 MODO FIESTA</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Pantalla de Configuración de Jugadores -->
+        <div id="playersScreen" class="screen">
+            <div class="setup-content">
+                <h2>👥 Modo Fiesta - Configurar Jugadores</h2>
+                
+                <div class="players-setup">
+                    <h3>¿Cuántos jugadores?</h3>
+                    <div class="player-count-selector">
+                        <button class="count-btn" onclick="setPlayerCount(2)">2</button>
+                        <button class="count-btn" onclick="setPlayerCount(3)">3</button>
+                        <button class="count-btn" onclick="setPlayerCount(4)">4</button>
+                        <button class="count-btn" onclick="setPlayerCount(5)">5</button>
+                        <button class="count-btn" onclick="setPlayerCount(6)">6</button>
+                        <button class="count-btn" onclick="setPlayerCount(7)">7</button>
+                        <button class="count-btn" onclick="setPlayerCount(8)">8</button>
+                    </div>
+
+                    <div id="playerInputs" class="player-inputs"></div>
+
+                    <div class="setup-buttons">
+                        <button onclick="goToSetup()" class="btn btn-secondary">Volver</button>
+                        <button id="startPartyBtn" onclick="startPartyGame()" class="btn btn-primary" style="display:none;">Iniciar Fiesta 🎉</button>
+                    </div>
+                </div>
             </div>
         </div>
 
