@@ -5,10 +5,10 @@ let isSpinning = false;
 let currentRotation = 0;
 let questionsData = {}; // Almacenará las preguntas cargadas
 
-// Detectar URL de API basada en el entorno
-const API_BASE_URL = window.location.hostname === 'localhost' 
-    ? 'http://localhost:3000/api' 
-    : `${window.location.origin}/api`;
+// Detectar URL base
+const API_BASE = window.location.hostname === 'localhost' 
+    ? 'http://localhost:3000' 
+    : window.location.origin;
 
 // Audio elements
 const spinSound = new Audio();
@@ -199,7 +199,7 @@ function showScreen(screenId) {
 // Cargar preguntas desde el archivo JSON
 async function loadQuestions() {
     try {
-        const response = await fetch(`${API_BASE_URL}/questions`);
+        const response = await fetch(`${API_BASE}/api/questions`);
         questionsData = await response.json();
         console.log('Preguntas cargadas correctamente:', questionsData);
     } catch (error) {
@@ -546,7 +546,7 @@ function saveCustomQuestion() {
     }
 
     // Enviar pregunta al servidor para moderación
-    fetch(`${API_BASE_URL}/suggest-question`, {
+    fetch(`${API_BASE}/api/suggest-question`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ 
