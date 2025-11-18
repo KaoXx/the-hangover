@@ -10,6 +10,17 @@ const API_BASE = window.location.hostname === 'localhost'
     ? 'http://localhost:3000' 
     : window.location.origin;
 
+// Detectar dispositivo móvil
+const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+const isTouchDevice = () => {
+    return (('ontouchstart' in window) || (navigator.maxTouchPoints > 0) || (navigator.msMaxTouchPoints > 0));
+};
+
+// Optimizaciones para móviles
+if (isMobile || isTouchDevice()) {
+    document.body.style.touchAction = 'manipulation';
+}
+
 // Audio elements
 const spinSound = new Audio();
 const resultSound = new Audio();
@@ -430,13 +441,13 @@ function spinWheel() {
     const wheelWrapper = canvas.parentElement;
     wheelWrapper.classList.add('wheel-glow');
 
-    // Velocidad aleatoria - más giros y más duración
+    // Velocidad aleatoria - ajustada para móviles
     const spins = Math.floor(Math.random() * 8) + 8; // 8-16 giros completos
     const extraRotation = Math.random() * 360;
     const totalRotation = spins * 360 + extraRotation;
 
-    // Animación con easing mejorado
-    const duration = 5000; // 5 segundos para un giro más espectacular
+    // Duración adaptada al dispositivo (más rápido en móviles para mejor UX)
+    const duration = isMobile ? 3500 : 5000; // 3.5s en móvil, 5s en desktop
     const startTime = Date.now();
     const startRotation = currentRotation;
 
@@ -450,6 +461,7 @@ function spinWheel() {
 
         currentRotation = startRotation + totalRotation * easeProgress;
 
+        // Usar will-change para mejor rendimiento
         canvas.style.transform = `rotate(${currentRotation}deg)`;
 
         if (progress < 1) {

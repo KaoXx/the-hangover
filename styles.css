@@ -456,84 +456,291 @@ body {
 /* ===== RESPONSIVE ===== */
 @media (max-width: 768px) {
     .welcome-content {
-        padding: 40px 20px;
+        padding: 30px 15px;
+        border-radius: 15px;
     }
 
     .welcome-content h1 {
-        font-size: 2.5em;
+        font-size: 2em;
+        margin-bottom: 15px;
+    }
+
+    .welcome-content p {
+        font-size: 1em;
+        margin-bottom: 25px;
+    }
+
+    .btn-large {
+        padding: 14px 30px;
+        font-size: 1em;
     }
 
     .setup-content {
-        padding: 25px;
+        padding: 20px;
+        border-radius: 15px;
+        max-height: 85vh;
+    }
+
+    .setup-content h2 {
+        font-size: 1.5em;
+        margin-bottom: 20px;
+    }
+
+    .setup-content h3 {
+        font-size: 1em;
+        margin-top: 15px;
+        margin-bottom: 10px;
     }
 
     .categories-grid {
         grid-template-columns: repeat(2, 1fr);
+        gap: 10px;
+    }
+
+    .category-label {
+        padding: 10px;
+        font-size: 0.9em;
+    }
+
+    .input-group {
+        gap: 8px;
+    }
+
+    .input-group input {
+        padding: 10px;
+        font-size: 0.95em;
+    }
+
+    .setup-buttons {
+        gap: 10px;
+    }
+
+    .btn {
+        padding: 10px 16px;
+        font-size: 0.85em;
     }
 
     .game-content {
-        gap: 20px;
-        flex-wrap: wrap;
+        gap: 15px;
         flex-direction: column;
+        padding: 10px;
     }
 
     .wheel-container {
         width: 100%;
         height: auto;
+        gap: 25px;
+        padding: 15px 0;
     }
 
     .wheel-wrapper {
-        width: 380px;
-        height: 380px;
+        width: 360px;
+        height: 360px;
     }
 
     #wheelCanvas {
-        width: 380px;
-        height: 380px;
+        width: 360px;
+        height: 360px;
+    }
+
+    .spin-button {
+        width: 140px;
+        height: 60px;
+        font-size: 0.9em;
+    }
+
+    .spin-text {
+        font-size: 0.85em;
+        letter-spacing: 1.5px;
     }
 
     .info-panel {
         width: 100%;
         max-width: 100%;
         min-width: auto;
+        padding: 25px;
+        border-radius: 12px;
+        gap: 15px;
     }
 
-    .spin-button {
-        width: 150px;
-        height: 65px;
-        font-size: 0.95em;
+    .result-display {
+        min-height: 280px;
+        padding: 20px;
+        border-radius: 10px;
     }
 
-    .spin-text {
+    .result-display h2 {
+        font-size: 1.3em;
+    }
+
+    .result-display .result-category {
+        font-size: 4em;
+        margin: 15px 0;
+    }
+
+    .result-display .result-text {
+        font-size: 1.2em;
+    }
+
+    .result-display .result-question {
+        font-size: 1.1em;
+        margin-top: 15px;
+    }
+
+    .controls {
+        gap: 8px;
+    }
+
+    .btn-small {
+        padding: 10px 12px;
+        font-size: 0.85em;
+        flex: 1;
+    }
+
+    .modal-content {
+        width: 90%;
+        max-width: 90%;
+        padding: 20px;
+        border-radius: 15px;
+    }
+
+    .modal-content h2 {
+        font-size: 1.3em;
+        margin-bottom: 15px;
+    }
+
+    .modal-form {
+        gap: 12px;
+    }
+
+    .modal-form label {
         font-size: 0.9em;
-        letter-spacing: 2px;
     }
 
-    .info-panel {
-        max-width: 100%;
+    .modal-form select,
+    .modal-form textarea {
+        padding: 10px;
+        font-size: 0.9em;
+    }
+
+    .modal-form textarea {
+        min-height: 80px;
+    }
+
+    .modal-buttons {
+        gap: 8px;
     }
 }
 
 @media (max-width: 480px) {
+    body {
+        padding: 10px;
+    }
+
+    .container {
+        min-height: auto;
+    }
+
+    .welcome-content {
+        padding: 25px 15px;
+    }
+
     .welcome-content h1 {
-        font-size: 2em;
+        font-size: 1.6em;
+        margin-bottom: 10px;
     }
 
     .welcome-content p {
-        font-size: 1em;
+        font-size: 0.9em;
+        margin-bottom: 20px;
+    }
+
+    .btn-large {
+        padding: 12px 24px;
+        font-size: 0.95em;
     }
 
     .setup-content {
-        padding: 20px;
+        padding: 15px;
+        border-radius: 12px;
+        max-height: 90vh;
+    }
+
+    .setup-content h2 {
+        font-size: 1.3em;
+        margin-bottom: 15px;
+    }
+
+    .setup-content h3 {
+        font-size: 0.95em;
+        margin-top: 12px;
+        margin-bottom: 8px;
     }
 
     .categories-grid {
         grid-template-columns: 1fr;
+        gap: 8px;
+    }
+
+    .category-label {
+        padding: 9px;
+        font-size: 0.85em;
+    }
+
+    .category-label input[type="checkbox"] {
+        width: 18px;
+        height: 18px;
+    }
+
+    .input-group {
+        flex-direction: column;
+        gap: 8px;
+    }
+
+    .input-group input {
+        padding: 10px;
+        font-size: 0.9em;
+        width: 100%;
+    }
+
+    .input-group .btn {
+        width: 100%;
+    }
+
+    .custom-list {
+        gap: 8px;
+    }
+
+    .custom-tag {
+        padding: 6px 10px;
+        font-size: 0.8em;
+    }
+
+    .setup-buttons {
+        flex-direction: column;
+        gap: 8px;
+    }
+
+    .btn {
+        padding: 10px 16px;
+        font-size: 0.8em;
+        width: 100%;
+    }
+
+    .btn-small {
+        width: 100%;
+    }
+
+    .game-content {
+        gap: 10px;
+        flex-direction: column;
+        padding: 5px;
     }
 
     .wheel-container {
         width: 100%;
-        height: auto;
+        gap: 20px;
+        padding: 10px 0;
     }
 
     .wheel-wrapper {
@@ -544,17 +751,154 @@ body {
     #wheelCanvas {
         width: 280px;
         height: 280px;
+        filter: drop-shadow(0 10px 30px rgba(255, 107, 53, 0.3));
     }
 
     .spin-button {
         width: 130px;
         height: 55px;
-        font-size: 0.85em;
+        font-size: 0.8em;
+        border-radius: 12px;
     }
 
     .spin-text {
         font-size: 0.75em;
-        letter-spacing: 1.5px;
+        letter-spacing: 1px;
+    }
+
+    .info-panel {
+        width: 100%;
+        max-width: 100%;
+        min-width: auto;
+        padding: 15px;
+        border-radius: 10px;
+        gap: 10px;
+        min-height: auto;
+    }
+
+    .result-display {
+        min-height: 250px;
+        padding: 15px;
+        border-radius: 8px;
+    }
+
+    .result-display h2 {
+        font-size: 1.1em;
+    }
+
+    .result-display .result-category {
+        font-size: 3em;
+        margin: 10px 0;
+    }
+
+    .result-display .result-text {
+        font-size: 1em;
+    }
+
+    .result-display .result-question {
+        font-size: 0.95em;
+        margin-top: 12px;
+        line-height: 1.5;
+    }
+
+    .controls {
+        gap: 6px;
+        flex-direction: column;
+    }
+
+    .btn-small {
+        padding: 8px 10px;
+        font-size: 0.75em;
+        flex: 1;
+    }
+
+    .modal-content {
+        width: 95%;
+        max-width: 95%;
+        padding: 15px;
+        border-radius: 12px;
+        border-width: 2px;
+    }
+
+    .modal-content h2 {
+        font-size: 1.1em;
+        margin-bottom: 12px;
+    }
+
+    .modal-close {
+        right: 15px;
+        top: 15px;
+        font-size: 24px;
+    }
+
+    .modal-form {
+        gap: 10px;
+    }
+
+    .modal-form label {
+        font-size: 0.85em;
+    }
+
+    .modal-form select,
+    .modal-form textarea {
+        padding: 8px;
+        font-size: 0.85em;
+    }
+
+    .modal-form textarea {
+        min-height: 70px;
+    }
+
+    .modal-buttons {
+        flex-direction: column;
+        gap: 8px;
+    }
+
+    .modal-buttons .btn {
+        width: 100%;
+    }
+}
+
+@media (max-width: 360px) {
+    .welcome-content h1 {
+        font-size: 1.3em;
+    }
+
+    .setup-content {
+        padding: 12px;
+    }
+
+    .wheel-wrapper {
+        width: 240px;
+        height: 240px;
+    }
+
+    #wheelCanvas {
+        width: 240px;
+        height: 240px;
+    }
+
+    .spin-button {
+        width: 110px;
+        height: 48px;
+        font-size: 0.7em;
+    }
+
+    .result-display .result-category {
+        font-size: 2.5em;
+    }
+
+    .result-display .result-question {
+        font-size: 0.9em;
+    }
+
+    .modal-content {
+        padding: 12px;
+    }
+
+    .btn {
+        padding: 8px 12px;
+        font-size: 0.75em;
     }
 }
 
