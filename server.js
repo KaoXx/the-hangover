@@ -7,263 +7,200 @@ const cors = require('cors');
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// Middleware
+// ============= CONFIGURACIÓN =============
 app.use(bodyParser.json());
 app.use(cors());
-
-// Servir archivos estáticos
 app.use(express.static(path.join(__dirname), {
-    setHeaders: (res, path) => {
-        if (path.endsWith('.js')) {
-            res.setHeader('Content-Type', 'application/javascript');
-        } else if (path.endsWith('.css')) {
-            res.setHeader('Content-Type', 'text/css');
-        }
+    setHeaders: (res, filePath) => {
+        if (filePath.endsWith('.js')) res.setHeader('Content-Type', 'application/javascript');
+        else if (filePath.endsWith('.css')) res.setHeader('Content-Type', 'text/css');
     }
 }));
 
-// Variables
 const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || 'rHqfuam06C##@V';
 const QUESTIONS_FILE = path.join(__dirname, 'questions.json');
 const PENDING_FILE = path.join(__dirname, 'pending_questions.json');
 
-// Inicializar archivos al arrancar
-if (!fs.existsSync(PENDING_FILE)) {
-    fs.writeFileSync(PENDING_FILE, JSON.stringify({ "pending": [] }, null, 2), 'utf8');
-    console.log('Archivo pending_questions.json creado');
-}
+// ============= ALMACENAMIENTO EN MEMORIA =============
+let pendingQuestionsMemory = [];
 
-// Helpers para leer/escribir archivos
-function readFile(filename) {
+// Cargar preguntas pendientes del archivo al iniciar
+function loadPendingQuestions() {
     try {
-        const data = fs.readFileSync(filename, 'utf8');
-        return JSON.parse(data);
-    } catch (error) {
-        console.log(`Archivo ${filename} no encontrado, usando valores por defecto`);
-        // Retornar estructura vacía si el archivo no existe
-        if (filename === QUESTIONS_FILE) {
-            return { "Verdad": [], "Reto": [], "Moneda": [], "Prenda": [], "Tragos": [], "Hot": [] };
-        } else if (filename === PENDING_FILE) {
-            return { "pending": [] };
+        if (fs.existsSync(PENDING_FILE)) {
+            const data = fs.readFileSync(PENDING_FILE, 'utf8');
+            const parsed = JSON.parse(data);
+            pendingQuestionsMemory = parsed.pending || [];
+            console.log(`✅ Cargadas ${pendingQuestionsMemory.length} preguntas pendientes`);
         }
-        return {};
-    }
-}
-
-function writeFile(filename, data) {
-    try {
-        fs.writeFileSync(filename, JSON.stringify(data, null, 2), 'utf8');
-        console.log(`Archivo ${filename} actualizado`);
     } catch (error) {
-        console.error(`Error escribiendo ${filename}:`, error);
+        console.error('Error cargando preguntas pendientes:', error);
+        pendingQuestionsMemory = [];
     }
 }
 
-// Inicializar archivos si no existen
-function initializeFiles() {
-    if (!fs.existsSync(QUESTIONS_FILE)) {
-        writeFile(QUESTIONS_FILE, { "Verdad": [], "Reto": [], "Moneda": [], "Prenda": [], "Tragos": [], "Hot": [] });
-    }
-    if (!fs.existsSync(PENDING_FILE)) {
-        writeFile(PENDING_FILE, { "pending": [] });
+// Guardar preguntas pendientes al archivo
+function savePendingQuestions() {
+    try {
+        fs.writeFileSync(PENDING_FILE, JSON.stringify({ pending: pendingQuestionsMemory }, null, 2), 'utf8');
+    } catch (error) {
+        console.error('Error guardando preguntas pendientes:', error);
     }
 }
 
-// Endpoint para enviar pregunta (usuario normal)
+// Leer preguntas aprobadas
+function readApprovedQuestions() {
+    try {
+        if (fs.existsSync(QUESTIONS_FILE)) {
+            return JSON.parse(fs.readFileSync(QUESTIONS_FILE, 'utf8'));
+        }
+    } catch (error) {
+        console.error('Error leyendo preguntas aprobadas:', error);
+    }
+    return { "Verdad": [], "Reto": [], "Moneda": [], "Prenda": [], "Tragos": [], "Hot": [] };
+}
+
+// Guardar preguntas aprobadas
+function saveApprovedQuestions(data) {
+    try {
+        fs.writeFileSync(QUESTIONS_FILE, JSON.stringify(data, null, 2), 'utf8');
+    } catch (error) {
+        console.error('Error guardando preguntas aprobadas:', error);
+    }
+}
+
+// ============= RUTAS HTML =============
+app.get('/', (req, res) => res.sendFile(path.join(__dirname, 'index.html')));
+app.get('/index.html', (req, res) => res.sendFile(path.join(__dirname, 'index.html')));
+app.get('/admin.html', (req, res) => res.sendFile(path.join(__dirname, 'admin.html')));
+
+// ============= API: OBTENER PREGUNTAS APROBADAS =============
+app.get('/api/questions', (req, res) => {
+    const questions = readApprovedQuestions();
+    res.json(questions);
+});
+
+// ============= API: SUGERIR PREGUNTA =============
 app.post('/api/suggest-question', (req, res) => {
     try {
         const { category, text } = req.body;
-
         if (!category || !text) {
             return res.status(400).json({ error: 'Categoría y texto requeridos' });
         }
 
-        // Asegurar que el archivo existe
-        if (!fs.existsSync(PENDING_FILE)) {
-            fs.writeFileSync(PENDING_FILE, JSON.stringify({ "pending": [] }, null, 2), 'utf8');
-        }
+        const newQuestion = { id: Date.now(), category, text, timestamp: new Date().toISOString(), status: 'pending' };
+        pendingQuestionsMemory.push(newQuestion);
+        savePendingQuestions();
 
-        let pending = readFile(PENDING_FILE);
-        
-        if (!pending.pending) {
-            pending.pending = [];
-        }
-
-        // Crear objeto de pregunta pendiente
-        const newQuestion = {
-            id: Date.now(),
-            category,
-            text,
-            timestamp: new Date().toISOString(),
-            status: 'pending'
-        };
-
-        pending.pending.push(newQuestion);
-        writeFile(PENDING_FILE, pending);
-
-        console.log('Pregunta sugerida:', newQuestion);
-
-        res.json({ 
-            success: true, 
-            message: 'Pregunta enviada para moderación',
-            id: newQuestion.id
-        });
+        console.log('✅ Pregunta sugerida:', newQuestion.text.substring(0, 50));
+        res.json({ success: true, message: 'Pregunta enviada para moderación', id: newQuestion.id });
     } catch (error) {
-        console.error('Error:', error);
-        res.status(500).json({ error: 'Error al guardar la pregunta: ' + error.message });
+        console.error('❌ Error sugerencia:', error);
+        res.status(500).json({ error: 'Error al guardar' });
     }
 });
 
-// Endpoint para autenticación admin
+// ============= API: LOGIN ADMIN =============
 app.post('/api/admin-login', (req, res) => {
     const { password } = req.body;
-
     if (password === ADMIN_PASSWORD) {
-        // En producción, usar JWT tokens
-        res.json({ 
-            success: true, 
-            token: Buffer.from(ADMIN_PASSWORD).toString('base64'),
-            message: 'Autenticación exitosa'
-        });
+        res.json({ success: true, token: Buffer.from(ADMIN_PASSWORD).toString('base64'), message: 'Autenticación exitosa' });
     } else {
         res.status(401).json({ success: false, error: 'Contraseña incorrecta' });
     }
 });
 
-// Endpoint para obtener preguntas pendientes (admin)
+// ============= API: OBTENER PREGUNTAS PENDIENTES =============
 app.post('/api/admin/pending-questions', (req, res) => {
     try {
         const { token } = req.body;
-
         if (token !== Buffer.from(ADMIN_PASSWORD).toString('base64')) {
             return res.status(401).json({ error: 'No autorizado' });
         }
 
-        // Asegurar que el archivo existe
-        if (!fs.existsSync(PENDING_FILE)) {
-            fs.writeFileSync(PENDING_FILE, JSON.stringify({ "pending": [] }, null, 2), 'utf8');
-        }
-
-        const pending = readFile(PENDING_FILE);
-        console.log('Preguntas pendientes:', pending.pending);
-        res.json(pending.pending || []);
+        console.log(`📋 Admin solicita preguntas pendientes: ${pendingQuestionsMemory.length}`);
+        res.json(pendingQuestionsMemory);
     } catch (error) {
-        console.error('Error al obtener preguntas:', error);
+        console.error('❌ Error obteniendo pendientes:', error);
         res.status(500).json({ error: 'Error al obtener preguntas' });
     }
 });
 
-// Endpoint para aprobar pregunta (admin)
+// ============= API: APROBAR PREGUNTA =============
 app.post('/api/admin/approve-question', (req, res) => {
     try {
         const { token, questionId } = req.body;
-
         if (token !== Buffer.from(ADMIN_PASSWORD).toString('base64')) {
             return res.status(401).json({ error: 'No autorizado' });
         }
 
-        let pending = readFile(PENDING_FILE);
-        let questions = readFile(QUESTIONS_FILE);
-
-        // Buscar la pregunta pendiente (convertir a número)
-        const question = pending.pending?.find(q => q.id === parseInt(questionId) || q.id === questionId);
-        
-        if (!question) {
-            console.error('Pregunta no encontrada. ID:', questionId, 'Pendientes:', pending.pending);
+        const index = pendingQuestionsMemory.findIndex(q => q.id === parseInt(questionId) || q.id === questionId);
+        if (index === -1) {
             return res.status(404).json({ error: 'Pregunta no encontrada' });
         }
 
-        // Asegurarse de que la categoría existe
-        if (!questions[question.category]) {
-            questions[question.category] = [];
+        const question = pendingQuestionsMemory[index];
+        const approvedQuestions = readApprovedQuestions();
+
+        if (!approvedQuestions[question.category]) {
+            approvedQuestions[question.category] = [];
         }
 
-        // Añadir a preguntas aprobadas
-        questions[question.category].push(question.text);
+        approvedQuestions[question.category].push(question.text);
+        saveApprovedQuestions(approvedQuestions);
 
-        // Eliminar de pendientes
-        pending.pending = pending.pending.filter(q => q.id !== parseInt(questionId) && q.id !== questionId);
+        pendingQuestionsMemory.splice(index, 1);
+        savePendingQuestions();
 
-        // Guardar cambios
-        writeFile(QUESTIONS_FILE, questions);
-        writeFile(PENDING_FILE, pending);
-
-        console.log('Pregunta aprobada:', question.text, 'en', question.category);
-
-        res.json({ 
-            success: true, 
-            message: 'Pregunta aprobada y añadida'
-        });
+        console.log(`✅ Pregunta aprobada: "${question.text.substring(0, 50)}..."`);
+        res.json({ success: true, message: 'Pregunta aprobada' });
     } catch (error) {
-        console.error('Error al aprobar:', error);
-        res.status(500).json({ error: 'Error al aprobar pregunta: ' + error.message });
+        console.error('❌ Error aprobando:', error);
+        res.status(500).json({ error: 'Error al aprobar: ' + error.message });
     }
 });
 
-// Endpoint para rechazar pregunta (admin)
+// ============= API: RECHAZAR PREGUNTA =============
 app.post('/api/admin/reject-question', (req, res) => {
     try {
         const { token, questionId } = req.body;
-
         if (token !== Buffer.from(ADMIN_PASSWORD).toString('base64')) {
             return res.status(401).json({ error: 'No autorizado' });
         }
 
-        let pending = readFile(PENDING_FILE);
+        const index = pendingQuestionsMemory.findIndex(q => q.id === parseInt(questionId) || q.id === questionId);
+        if (index === -1) {
+            return res.status(404).json({ error: 'Pregunta no encontrada' });
+        }
 
-        // Eliminar de pendientes (convertir a número)
-        pending.pending = pending.pending.filter(q => q.id !== parseInt(questionId) && q.id !== questionId);
+        const question = pendingQuestionsMemory[index];
+        pendingQuestionsMemory.splice(index, 1);
+        savePendingQuestions();
 
-        writeFile(PENDING_FILE, pending);
-
-        console.log('Pregunta rechazada. ID:', questionId);
-
-        res.json({ 
-            success: true, 
-            message: 'Pregunta rechazada'
-        });
+        console.log(`❌ Pregunta rechazada: "${question.text.substring(0, 50)}..."`);
+        res.json({ success: true, message: 'Pregunta rechazada' });
     } catch (error) {
-        console.error('Error al rechazar:', error);
-        res.status(500).json({ error: 'Error al rechazar pregunta' });
+        console.error('❌ Error rechazando:', error);
+        res.status(500).json({ error: 'Error al rechazar' });
     }
 });
 
-// Ruta raíz - servir index.html
-app.get('/', (req, res) => {
-    res.sendFile(path.join(__dirname, 'index.html'));
-});
-
-app.get('/index.html', (req, res) => {
-    res.sendFile(path.join(__dirname, 'index.html'));
-});
-
-app.get('/admin.html', (req, res) => {
-    res.sendFile(path.join(__dirname, 'admin.html'));
-});
-
-// Catch-all para archivos estáticos
-app.use((req, res, next) => {
-    const filePath = path.join(__dirname, req.path);
-    if (fs.existsSync(filePath)) {
-        res.sendFile(filePath);
-    } else {
-        next();
+// ============= CATCH-ALL =============
+app.use((req, res) => {
+    if (req.path.startsWith('/api/')) {
+        return res.status(404).json({ error: 'Endpoint no encontrado' });
     }
+    res.sendFile(path.join(__dirname, 'index.html'));
 });
 
-// API para obtener preguntas
-app.get('/api/questions', (req, res) => {
-    const questions = readFile(QUESTIONS_FILE);
-    res.json(questions);
-});
+// ============= INICIAR SERVIDOR =============
+loadPendingQuestions();
 
-// Iniciar servidor (solo en desarrollo local)
 if (require.main === module) {
     app.listen(PORT, () => {
-        console.log(`🎮 Servidor The Hangover ejecutándose en http://localhost:${PORT}`);
-        console.log(`📊 Panel admin disponible en http://localhost:${PORT}/admin.html`);
+        console.log(`\n🎮 The Hangover ejecutándose en http://localhost:${PORT}`);
+        console.log(`📊 Panel admin: http://localhost:${PORT}/admin.html\n`);
     });
 }
 
-// Exportar para Vercel
 module.exports = app;
