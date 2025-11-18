@@ -422,7 +422,7 @@ function drawPartyWheel(ctx, centerX, centerY, radius) {
     const startAngleOffset = -Math.PI / 2;
     
     // Radio interior y exterior
-    const innerRadius = radius * 0.4;
+    const innerRadius = radius * 0.35;
     const outerRadius = radius;
     const middleRadius = (innerRadius + outerRadius) / 2;
 
@@ -510,7 +510,7 @@ function drawPartyWheel(ctx, centerX, centerY, radius) {
 
         // Nombre del jugador
         const angle = startAngle + playerSliceAngle / 2;
-        const textRadius = innerRadius * 0.65;
+        const textRadius = innerRadius * 0.62;
         const textX = centerX + textRadius * Math.cos(angle);
         const textY = centerY + textRadius * Math.sin(angle);
 
@@ -519,12 +519,12 @@ function drawPartyWheel(ctx, centerX, centerY, radius) {
         ctx.rotate(angle + Math.PI / 2);
 
         ctx.fillStyle = '#fff';
-        ctx.font = 'bold 13px Arial';
+        ctx.font = 'bold 18px Arial';
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
         
         // Truncar nombre si es muy largo
-        const displayName = player.length > 12 ? player.substring(0, 11) + '.' : player;
+        const displayName = player.length > 10 ? player.substring(0, 9) + '.' : player;
         ctx.fillText(displayName, 0, 0);
 
         ctx.restore();
