@@ -10,7 +10,23 @@ const PORT = process.env.PORT || 3000;
 // Middleware
 app.use(bodyParser.json());
 app.use(cors());
-app.use(express.static(path.join(__dirname))); // Servir archivos estáticos
+
+// Servir archivos estáticos con cache adecuado
+app.use(express.static(path.join(__dirname), {
+    maxAge: '1d',
+    etag: false
+}));
+
+// Middleware para servir archivos específicos
+app.get('*.js', (req, res, next) => {
+    res.set('Content-Type', 'application/javascript');
+    next();
+});
+
+app.get('*.css', (req, res, next) => {
+    res.set('Content-Type', 'text/css');
+    next();
+});
 
 // Variables
 const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || 'rHqfuam06C##@V';
@@ -195,6 +211,16 @@ app.get('/', (req, res) => {
 
 app.get('/admin.html', (req, res) => {
     res.sendFile(path.join(__dirname, 'admin.html'));
+});
+
+// Catch-all para archivos estáticos
+app.use((req, res, next) => {
+    const filePath = path.join(__dirname, req.path);
+    if (fs.existsSync(filePath)) {
+        res.sendFile(filePath);
+    } else {
+        next();
+    }
 });
 
 // API para obtener preguntas
