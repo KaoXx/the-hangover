@@ -602,13 +602,6 @@ function loadQuestionsFromStorage() {
     }
 }
 
-// Actualizar loadQuestions para incluir localStorage
-const originalLoadQuestions = loadQuestions;
-async function loadQuestions() {
-    await originalLoadQuestions();
-    loadQuestionsFromStorage();
-}
-
 // Cerrar modal al hacer clic fuera de él
 window.onclick = function(event) {
     const modal = document.getElementById('addQuestionModal');
