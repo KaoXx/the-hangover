@@ -43,8 +43,40 @@ function loadPendingQuestions() {
 function savePendingQuestions() {
     try {
         fs.writeFileSync(PENDING_FILE, JSON.stringify({ pending: pendingQuestionsMemory }, null, 2), 'utf8');
+        // En producción, hacer commit automático
+        if (process.env.NODE_ENV === 'production') {
+            commitChanges('Auto-save pending questions');
+        }
     } catch (error) {
         console.error('Error guardando preguntas pendientes:', error);
+    }
+}
+
+// Guardar preguntas aprobadas
+function saveApprovedQuestions(data) {
+    try {
+        fs.writeFileSync(QUESTIONS_FILE, JSON.stringify(data, null, 2), 'utf8');
+        // En producción, hacer commit automático
+        if (process.env.NODE_ENV === 'production') {
+            commitChanges('Auto-save approved questions');
+        }
+    } catch (error) {
+        console.error('Error guardando preguntas aprobadas:', error);
+    }
+}
+
+// Hacer commit y push automático (solo en Vercel)
+function commitChanges(message) {
+    try {
+        if (process.env.VERCEL === '1') {
+            const { execSync } = require('child_process');
+            execSync('git add questions.json pending_questions.json', { cwd: __dirname });
+            execSync(`git commit -m "${message}" || true`, { cwd: __dirname });
+            execSync('git push origin main || true', { cwd: __dirname });
+            console.log(`✅ Git commit realizado: ${message}`);
+        }
+    } catch (error) {
+        console.error('Error en git commit:', error.message);
     }
 }
 
@@ -58,15 +90,6 @@ function readApprovedQuestions() {
         console.error('Error leyendo preguntas aprobadas:', error);
     }
     return { "Verdad": [], "Reto": [], "Moneda": [], "Prenda": [], "Tragos": [], "Hot": [] };
-}
-
-// Guardar preguntas aprobadas
-function saveApprovedQuestions(data) {
-    try {
-        fs.writeFileSync(QUESTIONS_FILE, JSON.stringify(data, null, 2), 'utf8');
-    } catch (error) {
-        console.error('Error guardando preguntas aprobadas:', error);
-    }
 }
 
 // ============= RUTAS HTML =============
