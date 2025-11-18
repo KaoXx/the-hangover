@@ -7,8 +7,8 @@ let questionsData = {}; // Almacenará las preguntas cargadas
 
 // Detectar URL de API basada en el entorno
 const API_BASE_URL = window.location.hostname === 'localhost' 
-    ? 'http://localhost:3000' 
-    : window.location.origin;
+    ? 'http://localhost:3000/api' 
+    : `${window.location.origin}/api`;
 
 // Audio elements
 const spinSound = new Audio();
@@ -546,7 +546,7 @@ function saveCustomQuestion() {
     }
 
     // Enviar pregunta al servidor para moderación
-    fetch(`${API_BASE_URL}/api/suggest-question`, {
+    fetch(`${API_BASE_URL}/suggest-question`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ 

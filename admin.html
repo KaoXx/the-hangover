@@ -286,8 +286,8 @@
         
         // Detectar URL de API basada en el entorno
         const API_BASE_URL = window.location.hostname === 'localhost' 
-            ? 'http://localhost:3000' 
-            : window.location.origin;
+            ? 'http://localhost:3000/api' 
+            : `${window.location.origin}/api`;
 
         function adminLogin() {
             const password = document.getElementById('adminPassword').value;
@@ -297,7 +297,7 @@
                 return;
             }
 
-            fetch(`${API_BASE_URL}/api/admin-login`, {
+            fetch(`${API_BASE_URL}/admin-login`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ password })
@@ -328,7 +328,7 @@
         }
 
         function loadPendingQuestions() {
-            fetch(`${API_BASE_URL}/api/admin/pending-questions`, {
+            fetch(`${API_BASE_URL}/admin/pending-questions`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ token: adminToken })
@@ -367,7 +367,7 @@
         function approveQuestion(questionId) {
             if (!confirm('¿Aprobar esta pregunta?')) return;
 
-            fetch(`${API_BASE_URL}/api/admin/approve-question`, {
+            fetch(`${API_BASE_URL}/admin/approve-question`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ token: adminToken, questionId })
@@ -387,7 +387,7 @@
         function rejectQuestion(questionId) {
             if (!confirm('¿Rechazar esta pregunta?')) return;
 
-            fetch(`${API_BASE_URL}/api/admin/reject-question`, {
+            fetch(`${API_BASE_URL}/admin/reject-question`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ token: adminToken, questionId })
