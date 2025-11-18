@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Hangover - Party Game Ruleta</title>
+    <link rel="stylesheet" href="styles.css">
+    <!-- Agregar fuente Google Fonts para más estilo -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;600;700;800&family=Bebas+Neue&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <!-- Pantalla de Inicio -->
+        <div id="startScreen" class="screen active">
+            <div class="welcome-content">
+                <h1>🎉 THE HANGOVER 🎉</h1>
+                <p>Juego de Ruleta para Fiestas</p>
+                <button onclick="goToSetup()" class="btn btn-primary btn-large">COMENZAR JUEGO</button>
+            </div>
+        </div>
+
+        <!-- Pantalla de Configuración -->
+        <div id="setupScreen" class="screen">
+            <div class="setup-content">
+                <h2>⚙️ Configurar el Juego</h2>
+                
+                <div class="categories-section">
+                    <h3>Categorías disponibles:</h3>
+                    <div class="categories-grid">
+                        <label class="category-label">
+                            <input type="checkbox" value="Verdad" checked>
+                            <span>❓ Verdad</span>
+                        </label>
+                        <label class="category-label">
+                            <input type="checkbox" value="Reto" checked>
+                            <span>⚡ Reto</span>
+                        </label>
+                        <label class="category-label">
+                            <input type="checkbox" value="Moneda" checked>
+                            <span>💰 Moneda</span>
+                        </label>
+                        <label class="category-label">
+                            <input type="checkbox" value="Prenda" checked>
+                            <span>👔 Prenda</span>
+                        </label>
+                        <label class="category-label">
+                            <input type="checkbox" value="Tragos" checked>
+                            <span>🍺 Tragos</span>
+                        </label>
+                        <label class="category-label">
+                            <input type="checkbox" value="Hot" checked>
+                            <span>🔥 Hot</span>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="custom-options-section">
+                    <h3>Agregar opciones personalizadas:</h3>
+                    <div class="input-group">
+                        <input type="text" id="customInput" placeholder="Escribe una opción personalizada">
+                        <button onclick="addCustomOption()" class="btn btn-secondary">Agregar</button>
+                    </div>
+                    <div id="customList" class="custom-list"></div>
+                </div>
+
+                <div class="setup-buttons">
+                    <button onclick="goToStart()" class="btn btn-secondary">Volver</button>
+                    <button onclick="startGame()" class="btn btn-primary">Iniciar Ruleta</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Pantalla del Juego -->
+        <div id="gameScreen" class="screen">
+            <div class="game-content">
+                <div class="wheel-container">
+                    <div class="wheel-wrapper">
+                        <canvas id="wheelCanvas" width="800" height="800"></canvas>
+                        <div class="wheel-pointer"></div>
+                    </div>
+                    <button id="spinButton" onclick="spinWheel()" class="spin-button">
+                        <span class="spin-text">SPIN</span>
+                    </button>
+                </div>
+
+                <div class="info-panel">
+                    <div id="currentResult" class="result-display">
+                        <h2>Pulsa GIRAR para comenzar</h2>
+                    </div>
+                    <div class="controls">
+                        <button onclick="goToSetup()" class="btn btn-secondary btn-small">Configurar</button>
+                        <button onclick="openAddQuestionModal()" class="btn btn-secondary btn-small">+ Pregunta</button>
+                        <button onclick="goToStart()" class="btn btn-secondary btn-small">Menú</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Modal para añadir preguntas -->
+        <div id="addQuestionModal" class="modal">
+            <div class="modal-content">
+                <span class="modal-close" onclick="closeAddQuestionModal()">&times;</span>
+                <h2>Añadir Pregunta Personalizada</h2>
+                
+                <div class="modal-form">
+                    <label for="questionCategory">Categoría:</label>
+                    <select id="questionCategory">
+                        <option value="Verdad">❓ Verdad</option>
+                        <option value="Reto">⚡ Reto</option>
+                        <option value="Moneda">💰 Moneda</option>
+                        <option value="Prenda">👔 Prenda</option>
+                        <option value="Tragos">🍺 Tragos</option>
+                        <option value="Hot">🔥 Hot</option>
+                    </select>
+
+                    <label for="questionText">Pregunta/Reto:</label>
+                    <textarea id="questionText" placeholder="Escribe aquí tu pregunta o reto..." rows="4"></textarea>
+
+                    <div class="modal-buttons">
+                        <button onclick="closeAddQuestionModal()" class="btn btn-secondary">Cancelar</button>
+                        <button onclick="saveCustomQuestion()" class="btn btn-primary">Guardar Pregunta</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>

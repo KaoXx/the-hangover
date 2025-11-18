@@ -1,0 +1,21 @@
+{
+  "name": "the-hangover",
+  "version": "1.0.0",
+  "description": "Party Game Ruleta - The Hangover",
+  "main": "server.js",
+  "engines": {
+    "node": "18.x"
+  },
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js"
+  },
+  "keywords": ["party", "game", "ruleta"],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.18.2",
+    "body-parser": "^1.20.2",
+    "cors": "^2.8.5"
+  }
+}
