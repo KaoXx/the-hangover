@@ -70,29 +70,41 @@ async function commitChanges(message) {
             return;
         }
 
+        console.log(`🔄 Intentando guardar en GitHub: ${message}`);
+
         // Leer el archivo actual
         const filePath = 'questions.json';
         const fileContent = fs.readFileSync(QUESTIONS_FILE, 'utf8');
         const encodedContent = Buffer.from(fileContent).toString('base64');
 
         // Obtener SHA del archivo actual
+        console.log(`📡 Obteniendo SHA del archivo...`);
         const getShaResponse = await fetch(`https://api.github.com/repos/${REPO}/contents/${filePath}`, {
-            headers: { 'Authorization': `token ${GITHUB_TOKEN}` }
+            method: 'GET',
+            headers: {
+                'Authorization': `token ${GITHUB_TOKEN}`,
+                'Accept': 'application/vnd.github.v3+json'
+            }
         });
         
         if (!getShaResponse.ok) {
-            console.error('Error obteniendo SHA:', await getShaResponse.text());
+            const errorText = await getShaResponse.text();
+            console.error(`❌ Error obteniendo SHA (${getShaResponse.status}):`, errorText);
             return;
         }
 
-        const { sha } = await getShaResponse.json();
+        const shaData = await getShaResponse.json();
+        const sha = shaData.sha;
+        console.log(`✅ SHA obtenido: ${sha.substring(0, 8)}...`);
 
         // Hacer el commit via API
+        console.log(`📤 Enviando cambios a GitHub...`);
         const commitResponse = await fetch(`https://api.github.com/repos/${REPO}/contents/${filePath}`, {
             method: 'PUT',
             headers: {
                 'Authorization': `token ${GITHUB_TOKEN}`,
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
+                'Accept': 'application/vnd.github.v3+json'
             },
             body: JSON.stringify({
                 message: message,
@@ -102,13 +114,16 @@ async function commitChanges(message) {
             })
         });
 
+        const responseText = await commitResponse.text();
+        
         if (commitResponse.ok) {
             console.log(`✅ Pregunta guardada en GitHub: ${message}`);
         } else {
-            console.error('Error en commit:', await commitResponse.text());
+            console.error(`❌ Error en commit (${commitResponse.status}):`, responseText);
         }
     } catch (error) {
-        console.error('Error en commitChanges:', error.message);
+        console.error('❌ Error en commitChanges:', error.message);
+        console.error('Stack:', error.stack);
     }
 }
 
